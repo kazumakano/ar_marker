@@ -1,6 +1,5 @@
 import time
 import cv2
-import numpy as np
 from cv2 import aruco
 import script.utility as util
 
