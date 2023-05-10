@@ -4,11 +4,35 @@ from cv2 import aruco
 import script.utility as util
 
 
-def estim_poses_from_img(cam_file: str, dict_idx: int, marker_len: float, file: str) -> None:
+def estim_poses_from_img(cam_file: str, dict_idx: int, marker_len: float, img_file: str) -> None:
     pass
 
-def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, file: str) -> None:
-    pass
+def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_file: str, start: float = 0) -> None:
+    cam_mat, cam_dist_coef = util.load_cam_data(cam_file)
+    cap = cv2.VideoCapture(filename=vid_file)
+    cap.set(cv2.CAP_PROP_POS_MSEC, 1000 * start)
+    prof_dict = aruco.getPredefinedDictionary(dict_idx)
+
+    print("press any key to exit")
+
+    while True:
+        ret, img = cap.read()
+        if not ret:
+            break
+
+        corners, ids = aruco.detectMarkers(img, prof_dict)[:2]
+
+        util.draw_ids(corners, ids, img)
+        util.draw_poses(cam_mat, cam_dist_coef, img, *aruco.estimatePoseSingleMarkers(corners, marker_len, cam_mat, cam_dist_coef)[:2])
+
+        cv2.imshow("video", img)
+
+        key = cv2.waitKey(delay=1)
+        if key != -1:
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
 
 def estim_poses_on_stream(cam_file: str, dict_idx: int, marker_len: float, uri: str) -> None:
     cam_mat, cam_dist_coef = util.load_cam_data(cam_file)
@@ -20,7 +44,6 @@ def estim_poses_on_stream(cam_file: str, dict_idx: int, marker_len: float, uri: 
     while True:
         ret, img = cap.read()
         if not ret:
-            # reconnect
             cap.release()
             time.sleep(1)
             cap = cv2.VideoCapture(filename=uri)
@@ -50,6 +73,7 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--img_file", help="specify image file", metavar="PATH_TO_IMG_FILE")
     parser.add_argument("-s", "--stream", help="specify video stream", metavar="URI")
     parser.add_argument("-v", "--vid_file", help="specify video file", metavar="PATH_TO_VID_FILE")
+    parser.add_argument("--start", default=0, type=float, help="specify time to start video", metavar="TIME")
     args = parser.parse_args()
 
     if args.img_file is not None:
@@ -57,4 +81,4 @@ if __name__ == "__main__":
     elif args.stream is not None:
         estim_poses_on_stream(args.cam_file, args.dict, args.len, args.stream)
     elif args.vid_file is not None:
-        estim_poses_from_vid(args.dict, args.vid_file)
+        estim_poses_from_vid(args.cam_file, args.dict, args.len, args.vid_file, args.start)
