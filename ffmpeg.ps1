@@ -1,7 +1,8 @@
 Param (
     [parameter(mandatory=$True)] $Src,
     [parameter(mandatory=$True)] $Tgt,
-    [ValidateSet('h264_cuvid', 'hevc_cuvid', 'mjpeg_cuvid', 'mpeg1_cuvid', 'mpeg2_cuvid', 'mpeg4_cuvid', 'vc1_cuvid', 'vp8_cuvid', 'vp9_cuvid')] $Codec
+    $Start,
+    $Stop
 )
 
 if (!(Test-Path $Tgt)) {
@@ -11,8 +12,12 @@ if (!(Test-Path $Tgt)) {
 $Src = wsl wslpath "'$(Convert-Path $Src)'"
 $Tgt = wsl wslpath "'$(Convert-Path $Tgt)'"
 
-if ($Codec) {
-    wsl ffmpeg -y -codec $Codec -i $Src $Tgt
+if ($Start -and $Stop) {
+    wsl ffmpeg -y -i $Src -codec copy -to $Stop -ss $Start $Tgt
+} elseif ($Start) {
+    wsl ffmpeg -y -i $Src -codec copy -ss $Start $Tgt
+} elseif ($Stop) {
+    wsl ffmpeg -y -i $Src -codec copy -to $Stop $Tgt
 } else {
-    wsl ffmpeg -y -i $Src $Tgt
+    wsl ffmpeg -y -i $Src -codec copy $Tgt
 }
