@@ -23,7 +23,7 @@ def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_fi
         corners, ids = aruco.detectMarkers(img, prof_dict)[:2]
 
         util.draw_ids(corners, ids, img)
-        util.draw_poses(cam_mat, cam_dist_coef, img, *aruco.estimatePoseSingleMarkers(corners, marker_len, cam_mat, cam_dist_coef)[:2])
+        util.draw_poses(cam_mat, cam_dist_coef, img, marker_len, *aruco.estimatePoseSingleMarkers(corners, marker_len, cam_mat, cam_dist_coef)[:2])
 
         cv2.imshow("video", img)
 
@@ -52,7 +52,7 @@ def estim_poses_on_stream(cam_file: str, dict_idx: int, marker_len: float, uri: 
         corners, ids = aruco.detectMarkers(img, prof_dict)[:2]
 
         util.draw_ids(corners, ids, img)
-        util.draw_poses(cam_mat, cam_dist_coef, img, *aruco.estimatePoseSingleMarkers(corners, marker_len, cam_mat, cam_dist_coef)[:2])
+        util.draw_poses(cam_mat, cam_dist_coef, img, marker_len, *aruco.estimatePoseSingleMarkers(corners, marker_len, cam_mat, cam_dist_coef)[:2])
 
         cv2.imshow("stream", img)
 
