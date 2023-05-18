@@ -6,7 +6,7 @@ from cv2 import aruco
 
 
 def create_markers(dict_idx: int, margin_ratio: float, num: int, resolution: int) -> None:
-    dir_per_dict = path.normpath(path.join(path.dirname(__file__), "image/", str(dict_idx)))
+    dir_per_dict = path.normpath(path.join(path.dirname(__file__), "marker/", str(dict_idx)))
     if not path.exists(dir_per_dict):
         mkdir(dir_per_dict)
 
