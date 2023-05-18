@@ -17,7 +17,6 @@ def track_markers_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_
     with open(path.join(path.dirname(__file__), "result/", result_file_name + ".csv"), mode="w", newline="") as f:
         print("press any key to exit")
 
-        frame_idx = 0
         writer = csv.writer(f)
         while True:
             ret, img = cap.read()
@@ -34,13 +33,11 @@ def track_markers_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_
 
             if ids is not None:
                 for i, id in enumerate(ids):
-                    writer.writerow((frame_idx, id[0], *tvecs[i][0], *rvecs[i][0]))
+                    writer.writerow((cap.get(cv2.CAP_PROP_POS_FRAMES), id[0], *tvecs[i][0], *rvecs[i][0]))
 
             key = cv2.waitKey(delay=1)
             if key != -1:
                 break
-
-            frame_idx += 1
 
     cap.release()
     cv2.destroyAllWindows()
