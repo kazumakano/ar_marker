@@ -1,8 +1,10 @@
+import os.path as path
 import time
 import cv2
 from cv2 import aruco
 import script.utility as util
 
+FPS = 5
 
 def detect_markers_from_img(dict_idx: int, file: str) -> None:
     img = cv2.imread(file)
@@ -20,10 +22,12 @@ def detect_markers_from_img(dict_idx: int, file: str) -> None:
 
     cv2.destroyAllWindows()
 
-def detect_markers_from_vid(dict_idx: int, file: str, start: float = 0) -> None:
+def detect_markers_from_vid(dict_idx: int, file: str, record: bool = False, start: float = 0) -> None:
     cap = cv2.VideoCapture(filename=file)
     cap.set(cv2.CAP_PROP_POS_MSEC, 1000 * start)
     prof_dict = aruco.getPredefinedDictionary(dict_idx)
+    if record:
+        recorder = cv2.VideoWriter(path.join(path.dirname(__file__), "result/", path.basename(file)), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
     print("press any key to exit")
 
@@ -38,17 +42,23 @@ def detect_markers_from_vid(dict_idx: int, file: str, start: float = 0) -> None:
         util.draw_ids(corners, ids, img)
 
         cv2.imshow("video", img)
+        if record:
+            recorder.write(img)
 
         key = cv2.waitKey(delay=1)
         if key != -1:
             break
 
     cap.release()
+    if record:
+        recorder.release()
     cv2.destroyAllWindows()
 
-def detect_markers_on_stream(dict_idx: int, uri: str) -> None:
+def detect_markers_on_stream(dict_idx: int, uri: str, record: bool = False) -> None:
     cap = cv2.VideoCapture(filename=uri)
     prof_dict = aruco.getPredefinedDictionary(dict_idx)
+    if record:
+        recorder = cv2.VideoWriter(path.join(path.dirname(__file__), "result/stream"), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
     print("press any key to exit")
 
@@ -66,12 +76,16 @@ def detect_markers_on_stream(dict_idx: int, uri: str) -> None:
         util.draw_ids(corners, ids, img)
 
         cv2.imshow("stream", img)
+        if record:
+            recorder.write(img)
 
         key = cv2.waitKey(delay=1)
         if key != -1:
             break
 
     cap.release()
+    if record:
+        recorder.release()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
@@ -82,12 +96,13 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--img_file", help="specify image file", metavar="PATH_TO_IMG_FILE")
     parser.add_argument("-s", "--stream", help="specify video stream", metavar="URI")
     parser.add_argument("-v", "--vid_file", help="specify video file", metavar="PATH_TO_VID_FILE")
+    parser.add_argument("-r", "--record", action="store_true", help="record result")
     parser.add_argument("--start", default=0, type=float, help="specify time to start video", metavar="TIME")
     args = parser.parse_args()
 
     if args.img_file is not None:
         detect_markers_from_img(args.dict, args.img_file)
     elif args.stream is not None:
-        detect_markers_on_stream(args.dict, args.stream)
+        detect_markers_on_stream(args.dict, args.stream, args.record)
     elif args.vid_file is not None:
-        detect_markers_from_vid(args.dict, args.vid_file, args.start)
+        detect_markers_from_vid(args.dict, args.vid_file, args.record, args.start)
