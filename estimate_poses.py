@@ -1,17 +1,21 @@
+import os.path as path
 import time
 import cv2
 from cv2 import aruco
 import script.utility as util
 
+FPS = 5
 
 def estim_poses_from_img(cam_file: str, dict_idx: int, marker_len: float, img_file: str) -> None:
     pass
 
-def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_file: str, start: float = 0) -> None:
+def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_file: str, export: bool = False, start: float = 0) -> None:
     cam_mat, cam_dist_coef = util.load_cam_data(cam_file)
     cap = cv2.VideoCapture(filename=vid_file)
     cap.set(cv2.CAP_PROP_POS_MSEC, 1000 * start)
     prof_dict = aruco.getPredefinedDictionary(dict_idx)
+    if export:
+        recorder = cv2.VideoWriter(path.join(path.dirname(__file__), "result/", path.basename(vid_file)), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
     print("press any key to exit")
 
@@ -26,12 +30,16 @@ def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_fi
         util.draw_poses(cam_mat, cam_dist_coef, img, marker_len, *aruco.estimatePoseSingleMarkers(corners, marker_len, cam_mat, cam_dist_coef)[:2])
 
         cv2.imshow("video", img)
+        if export:
+            recorder.write(img)
 
         key = cv2.waitKey(delay=1)
         if key != -1:
             break
 
     cap.release()
+    if export:
+        recorder.release()
     cv2.destroyAllWindows()
 
 def estim_poses_on_stream(cam_file: str, dict_idx: int, marker_len: float, uri: str) -> None:
