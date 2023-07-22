@@ -48,7 +48,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--cam_file", required=True, help="specify camera calibration file", metavar="PATH_TO_CAM_FILE")
     parser.add_argument("-l", "--len", type=float, required=True, help="specify marker length", metavar="LEN")
-    parser.add_argument("-d", "--dict", default=aruco.DICT_APRILTAG_16h5, type=int, help="specify profile dictionary index", metavar="IDX")
+    parser.add_argument("-d", "--dict", default=aruco.DICT_APRILTAG_16h5, type=int, help="specify profile dictionary", metavar="IDX")
     parser.add_argument("-s", "--stream", help="specify video stream", metavar="URI")
     parser.add_argument("-v", "--vid_file", help="specify video file", metavar="PATH_TO_VID_FILE")
     parser.add_argument("--start", default=0, type=float, help="specify time to start video", metavar="TIME")
