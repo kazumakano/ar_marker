@@ -95,12 +95,12 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--dict", default=aruco.DICT_APRILTAG_16h5, type=int, help="specify profile dictionary index", metavar="IDX")
+    parser.add_argument("-d", "--dict", default=aruco.DICT_APRILTAG_16h5, type=int, help="specify profile dictionary", metavar="IDX")
     parser.add_argument("-e", "--export", action="store_true", help="export result")
     parser.add_argument("-i", "--img_file", help="specify image file", metavar="PATH_TO_IMG_FILE")
     parser.add_argument("-s", "--stream", help="specify video stream", metavar="URI")
     parser.add_argument("-v", "--vid_file", help="specify video file", metavar="PATH_TO_VID_FILE")
-    parser.add_argument("--start", default=0, type=float, help="specify time to start video", metavar="TIME")
+    parser.add_argument("--start", default=0, type=float, help="specify time to start video [s]", metavar="TIME")
     args = parser.parse_args()
 
     if args.img_file is not None:
