@@ -15,7 +15,7 @@ def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_fi
     cap.set(cv2.CAP_PROP_POS_MSEC, 1000 * start)
     prof_dict = aruco.getPredefinedDictionary(dict_idx)
     if export:
-        recorder = cv2.VideoWriter(path.join(path.dirname(__file__), "result/", path.basename(vid_file)), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+        recorder = cv2.VideoWriter(path.join(path.dirname(__file__), "result/", path.splitext(path.basename(vid_file))[0] + "_pose.mkv"), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
     print("press any key to exit")
 
@@ -77,7 +77,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--cam_file", required=True, help="specify camera calibration file", metavar="PATH_TO_CAM_FILE")
     parser.add_argument("-l", "--len", type=float, required=True, help="specify marker length", metavar="LEN")
-    parser.add_argument("-d", "--dict", default=aruco.DICT_APRILTAG_16h5, type=int, help="specify profile dictionary index", metavar="IDX")
+    parser.add_argument("-d", "--dict", default=aruco.DICT_APRILTAG_16h5, type=int, help="specify profile dictionary", metavar="IDX")
+    parser.add_argument("-e", "--export", action="store_true", help="export result")
     parser.add_argument("-i", "--img_file", help="specify image file", metavar="PATH_TO_IMG_FILE")
     parser.add_argument("-s", "--stream", help="specify video stream", metavar="URI")
     parser.add_argument("-v", "--vid_file", help="specify video file", metavar="PATH_TO_VID_FILE")
@@ -89,4 +90,4 @@ if __name__ == "__main__":
     elif args.stream is not None:
         estim_poses_on_stream(args.cam_file, args.dict, args.len, args.stream)
     elif args.vid_file is not None:
-        estim_poses_from_vid(args.cam_file, args.dict, args.len, args.vid_file, args.start)
+        estim_poses_from_vid(args.cam_file, args.dict, args.len, args.vid_file, args.export, args.start)
