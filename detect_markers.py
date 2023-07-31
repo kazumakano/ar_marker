@@ -1,10 +1,11 @@
 import os.path as path
 import time
+from datetime import datetime
 import cv2
 from cv2 import aruco
 import script.utility as util
 
-FPS = 5
+STREAM_FPS = 5
 
 def detect_markers_from_img(dict_idx: int, file: str, export: bool = False) -> None:
     img = cv2.imread(file)
@@ -30,7 +31,7 @@ def detect_markers_from_vid(dict_idx: int, file: str, export: bool = False, star
     cap.set(cv2.CAP_PROP_POS_MSEC, 1000 * start)
     prof_dict = aruco.getPredefinedDictionary(dict_idx)
     if export:
-        recorder = cv2.VideoWriter(path.join(path.dirname(__file__), "result/", path.basename(file)), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+        recorder = cv2.VideoWriter(path.join(path.dirname(__file__), "result/", path.basename(file)), cv2.VideoWriter_fourcc(*"mp4v"), cap.get(cv2.CAP_PROP_FPS), (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
     print("press any key to exit")
 
@@ -61,7 +62,7 @@ def detect_markers_on_stream(dict_idx: int, uri: str, export: bool = False) -> N
     cap = cv2.VideoCapture(filename=uri)
     prof_dict = aruco.getPredefinedDictionary(dict_idx)
     if export:
-        recorder = cv2.VideoWriter(path.join(path.dirname(__file__), "result/stream.mkv"), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+        recorder = cv2.VideoWriter(path.join(path.dirname(__file__), "result/", f"stream_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mkv"), cv2.VideoWriter_fourcc(*"mp4v"), STREAM_FPS, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
     print("press any key to exit")
 
