@@ -49,8 +49,7 @@ def detect_markers_from_vid(dict_idx: int, file: str, export: bool = False, star
         if export:
             recorder.write(img)
 
-        key = cv2.waitKey(delay=1)
-        if key != -1:
+        if cv2.waitKey(delay=1) != -1:
             break
 
     cap.release()
@@ -83,8 +82,7 @@ def detect_markers_on_stream(dict_idx: int, uri: str, export: bool = False) -> N
         if export:
             recorder.write(img)
 
-        key = cv2.waitKey(delay=1)
-        if key != -1:
+        if cv2.waitKey(delay=1) != -1:
             break
 
     cap.release()

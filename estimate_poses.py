@@ -34,8 +34,7 @@ def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_fi
         if export:
             recorder.write(img)
 
-        key = cv2.waitKey(delay=1)
-        if key != -1:
+        if cv2.waitKey(delay=1) != -1:
             break
 
     cap.release()
@@ -69,8 +68,7 @@ def estim_poses_on_stream(cam_file: str, dict_idx: int, marker_len: float, uri: 
         if export:
             recorder.write(img)
 
-        key = cv2.waitKey(delay=1)
-        if key != -1:
+        if cv2.waitKey(delay=1) != -1:
             break
 
     cap.release()
