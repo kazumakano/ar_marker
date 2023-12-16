@@ -32,8 +32,7 @@ def track_markers_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_
                 for i, id in enumerate(ids):
                     writer.writerow((cap.get(cv2.CAP_PROP_POS_FRAMES), id[0], *tvecs[i][0], *rvecs[i][0]))
 
-            key = cv2.waitKey(delay=1)
-            if key != -1:
+            if cv2.waitKey(delay=1) != -1:
                 break
 
     cap.release()
