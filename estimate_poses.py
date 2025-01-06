@@ -7,10 +7,10 @@ import script.utility as util
 
 STREAM_FPS = 5
 
-def estim_poses_from_img(cam_file: str, dict_idx: int, marker_len: float, img_file: str, export: bool = False) -> None:
+def estim_poses_from_img(cam_file: str, dict_idx: int, marker_len_in_meter: float, img_file: str, export: bool = False) -> None:
     pass
 
-def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_file: str, export: bool = False, start: float = 0) -> None:
+def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len_in_meter: float, vid_file: str, export: bool = False, start: float = 0) -> None:
     cam_mat, cam_dist_coef = util.load_cam_data(cam_file)
     cap = cv2.VideoCapture(filename=vid_file)
     cap.set(cv2.CAP_PROP_POS_MSEC, 1000 * start)
@@ -28,7 +28,7 @@ def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_fi
         corners, ids = aruco.detectMarkers(img, prof_dict)[:2]
 
         util.draw_ids(corners, ids, img)
-        util.draw_poses(cam_mat, cam_dist_coef, img, marker_len, *aruco.estimatePoseSingleMarkers(corners, marker_len, cam_mat, cam_dist_coef)[:2])
+        util.draw_poses(cam_mat, cam_dist_coef, img, marker_len_in_meter, *aruco.estimatePoseSingleMarkers(corners, marker_len_in_meter, cam_mat, cam_dist_coef)[:2])
 
         cv2.imshow("video", img)
         if export:
@@ -42,7 +42,7 @@ def estim_poses_from_vid(cam_file: str, dict_idx: int, marker_len: float, vid_fi
         recorder.release()
     cv2.destroyAllWindows()
 
-def estim_poses_on_stream(cam_file: str, dict_idx: int, marker_len: float, uri: str, export: bool = False) -> None:
+def estim_poses_on_stream(cam_file: str, dict_idx: int, marker_len_in_meter: float, uri: str, export: bool = False) -> None:
     cam_mat, cam_dist_coef = util.load_cam_data(cam_file)
     cap = cv2.VideoCapture(filename=uri)
     prof_dict = aruco.getPredefinedDictionary(dict_idx)
@@ -62,7 +62,7 @@ def estim_poses_on_stream(cam_file: str, dict_idx: int, marker_len: float, uri: 
         corners, ids = aruco.detectMarkers(img, prof_dict)[:2]
 
         util.draw_ids(corners, ids, img)
-        util.draw_poses(cam_mat, cam_dist_coef, img, marker_len, *aruco.estimatePoseSingleMarkers(corners, marker_len, cam_mat, cam_dist_coef)[:2])
+        util.draw_poses(cam_mat, cam_dist_coef, img, marker_len_in_meter, *aruco.estimatePoseSingleMarkers(corners, marker_len_in_meter, cam_mat, cam_dist_coef)[:2])
 
         cv2.imshow("stream", img)
         if export:
@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--cam_file", required=True, help="specify camera calibration file", metavar="PATH_TO_CAM_FILE")
-    parser.add_argument("-l", "--len", type=float, required=True, help="specify marker length", metavar="LEN")
+    parser.add_argument("-l", "--len", type=float, required=True, help="specify marker length in meter", metavar="LEN")
     parser.add_argument("-d", "--dict", default=aruco.DICT_APRILTAG_16h5, type=int, help="specify profile dictionary", metavar="IDX")
     parser.add_argument("-e", "--export", action="store_true", help="export result")
     parser.add_argument("-i", "--img_file", help="specify image file", metavar="PATH_TO_IMG_FILE")
